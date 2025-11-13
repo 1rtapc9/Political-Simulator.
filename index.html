@@ -1,16 +1,1091 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LifeSim: Political Ascension</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LifeSim: Political Ascension — Full Build</title>
+<meta name="description" content="LifeSim: start age 18, join military, run campaigns, deployments, medals, relationships, skills, events, leaderboards."/>
+<style>
+  :root{
+    --bg:#081226; --panel:#0d1622; --accent:#6fd3ff; --muted:#9fb0bf;
+    --good:#34d399; --bad:#fb7185; --gold:#f59e0b; --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,var(--bg),#02131a);color:#e7f4ff}
+  a{color:var(--accent)}
+  .app{max-width:1250px;margin:18px auto;padding:18px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  header h1{margin:0;font-size:20px;color:var(--accent)}
+  header .sub{color:var(--muted);font-size:13px}
+  .layout{display:flex;gap:12px}
+  .panel{background:linear-gradient(180deg,var(--panel), rgba(255,255,255,0.01)); padding:12px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6); min-width:0}
+  .sidebar{width:360px;flex:0 0 360px}
+  .stat{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+  .stat .bar{height:10px;background:#072033;border-radius:8px;overflow:hidden;margin-left:10px;flex:1}
+  .stat .bar > i{display:block;height:100%}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  button{background:linear-gradient(180deg,#0e76a8,#0b4f73);border:0;color:white;padding:8px 10px;border-radius:8px;cursor:pointer;transition:transform .08s,opacity .12s}
+  button:active{transform:translateY(1px) scale(.995)}
+  button.alt{background:linear-gradient(180deg,#2b6cb0,#1e3a8a)}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
+  button.danger{background:linear-gradient(180deg,#ef4444,#b91c1c)}
+  input,select,textarea{padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+  .log{height:220px;overflow:auto;background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;font-size:13px}
+  .muted{color:var(--muted)}
+  .title{font-weight:700;color:var(--accent);margin-bottom:6px}
+  .notice{background:linear-gradient(90deg,#072033,#02121a);padding:8px;border-radius:8px;margin-bottom:8px}
+  .role-pill{display:inline-block;padding:6px 8px;border-radius:999px;background:var(--glass);margin:4px 4px 4px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .medal{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin:6px 0}
+  .medal .icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .medal.gold .icon{background:linear-gradient(90deg,#fbbf24,#f59e0b);color:#042018}
+  .medal.silver .icon{background:linear-gradient(90deg,#cbd5e1,#94a3b8);color:#042018}
+  .medal.bronze .icon{background:linear-gradient(90deg,#f6ad55,#c2410c);color:#042018}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:50}
+  .modal{background:linear-gradient(180deg,#0b1622,#07121a);padding:16px;border-radius:10px;max-width:780px;width:94%;box-shadow:0 20px 60px rgba(0,0,0,0.7)}
+  .help{font-size:13px;color:var(--muted);margin-top:8px}
+  .small{font-size:13px}
+  .footer{margin-top:12px;color:var(--muted);font-size:13px}
+  .skill-tree{display:flex;gap:8px;flex-wrap:wrap}
+  .skill{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;min-width:140px}
+  .relationship{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;background:rgba(255,255,255,0.02);margin:4px 0}
+  .ping{animation:ping 1s ease-out;}\n  @keyframes ping{0%{transform:scale(.98);opacity:.6}100%{transform:scale(1);opacity:1}}\n  .kbd{background:#02121a;border:1px solid rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px;font-size:12px}\n  @media(max-width:1000px){.layout{flex-direction:column}.sidebar{width:100%}}
+</style>
 </head>
 <body>
-  <div id="game">
-    <!-- Main Game UI Loaded Dynamically -->
-  </div>
+<div class="app" id="app">
+  <header>
+    <div>
+      <h1>LifeSim: Political Ascension</h1>
+      <div class="sub">Start at age 18 → join military, run campaigns, win medals, build relationships, and aim for top office.</div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+      <div class="muted">Version: Full Single-file Build</div>
+      <div class="muted small">Controls: <span class="kbd">N</span> = Next year, <span class="kbd">A</span> = Auto 10y, <span class="kbd">S</span> = Save, <span class="kbd">L</span> = Load</div>
+    </div>
+  </header>
 
-  <script type="module" src="main.js"></script>
+  <div class="layout">
+    <div class="panel sidebar" id="left-panel">
+      <div class="title">Character</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="name" placeholder="Your name (Alex Carter)" style="flex:1"/>
+        <select id="region">
+          <option value="us">United States</option>
+          <option value="uk">United Kingdom</option>
+          <option value="ca">Canada</option>
+          <option value="de">Germany</option>
+          <option value="au">Australia</option>
+        </select>
+      </div>
+
+      <div style="margin-top:10px" class="controls">
+        <button id="newLife">New Life</button>
+        <button id="loadBtn" class="alt">Load</button>
+        <button id="saveBtn" class="alt">Save</button>
+        <button id="exportBtn" class="ghost">Export</button>
+        <button id="importBtn" class="ghost">Import</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="title">Stats</div>
+        <div class="stat"><div>Charisma</div><div style="display:flex;align-items:center"><div id="s_cha" style="width:48px;text-align:right">—</div><div class="stat bar"><i id="bar_cha" style="width:0%;background:linear-gradient(90deg,#60a5fa,#38bdf8)"></i></div></div></div>
+        <div class="stat"><div>Intelligence</div><div style="display:flex;align-items:center"><div id="s_int" style="width:48px;text-align:right">—</div><div class="stat bar"><i id="bar_int" style="width:0%;background:linear-gradient(90deg,#c084fc,#7c3aed)"></i></div></div></div>
+        <div class="stat"><div>Fitness</div><div style="display:flex;align-items:center"><div id="s_fit" style="width:48px;text-align:right">—</div><div class="stat bar"><i id="bar_fit" style="width:0%;background:linear-gradient(90deg,#34d399,#10b981)"></i></div></div></div>
+        <div class="stat"><div>Leadership</div><div style="display:flex;align-items:center"><div id="s_lea" style="width:48px;text-align:right">—</div><div class="stat bar"><i id="bar_lea" style="width:0%;background:linear-gradient(90deg,#f59e0b,#f97316)"></i></div></div></div>
+        <div class="stat"><div>Reputation</div><div style="display:flex;align-items:center"><div id="s_rep" style="width:48px;text-align:right">—</div><div class="stat bar"><i id="bar_rep" style="width:0%;background:linear-gradient(90deg,#60a5fa,#34d399)"></i></div></div></div>
+
+        <div style="margin-top:8px" class="muted small">XP: <span id="xp">—</span></div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="title">Quick Controls</div>
+        <div class="controls">
+          <button id="nextYear">Pass 1 Year <span class="muted" style="margin-left:6px">(<span id="age">—</span>)</span></button>
+          <button id="auto10" class="alt">Auto 10 years</button>
+          <button id="retire" class="danger">Retire</button>
+        </div>
+        <div class="help">Tip: short play sessions ~15 minutes — do 1–5 years. Long sessions 1–2 hours: plan careers & campaigns.</div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="title">Skill Trees</div>
+        <div class="skill-tree" id="skillTree"></div>
+        <div class="help">Spend skill points on branches. Some skills unlock mini-games and powerful options.</div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="title">Relationships</div>
+        <div id="relationships"></div>
+        <div class="help">Friends & rivals influence endorsements, news, and campaign outcomes.</div>
+      </div>
+
+    </div>
+
+    <div class="panel" id="main-panel">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div style="flex:1">
+          <div class="title">Decisions & Actions</div>
+          <div id="actionsArea" class="muted">Start a new life to see actions.</div>
+        </div>
+        <div style="width:320px;margin-left:12px">
+          <div class="title">Medals & Achievements</div>
+          <div id="medals" class="muted">No medals yet</div>
+          <div style="margin-top:8px" class="title">Leaderboard</div>
+          <div id="leaderboard" class="muted">No entries</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="title">Game Log</div>
+      <div id="gamelog" class="log"></div>
+
+      <div style="margin-top:12px" class="grid">
+        <div>
+          <div class="title">Deployments</div>
+          <div id="deployments" class="muted">No deployments</div>
+        </div>
+        <div>
+          <div class="title">Politics & Office</div>
+          <div id="politics" class="muted">Not in office</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="grid">
+        <div>
+          <div class="title">History</div>
+          <div id="history" class="muted">—</div>
+        </div>
+        <div>
+          <div class="title">Achievements</div>
+          <div id="achievements" class="muted">—</div>
+        </div>
+      </div>
+
+      <div class="footer">Want multiplayer? Leaderboards are built for future syncing. For now, it's single-player only.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal area -->
+<div id="modalRoot"></div>
+
+<script>
+/*
+  LifeSim: Full Single-file Build
+  - All modules are implemented inline as plain JS classes/functions
+  - Save/load to localStorage, leaderboard, export/import JSON
+  - Quick little synthesized sounds via WebAudio
+  - Keyboard shortcuts and onboarding
+*/
+
+/* -------------------------
+   Utilities & Constants
+   ------------------------- */
+const STORAGE_KEY = 'lifesim_full_v1';
+const LB_KEY = 'lifesim_leaderboard_v1';
+const REGIONS = {
+  us: {name:'United States', topTitle:'President', midTitle:'Senator/Representative', local:'Mayor', term:4},
+  uk: {name:'United Kingdom', topTitle:'Prime Minister', midTitle:'MP', local:'Local Councillor', term:5},
+  ca: {name:'Canada', topTitle:'Prime Minister', midTitle:'MP', local:'Mayor', term:4},
+  de: {name:'Germany', topTitle:'Chancellor', midTitle:'Bundestag Member', local:'Mayor', term:4},
+  au: {name:'Australia', topTitle:'Prime Minister', midTitle:'MP', local:'Mayor', term:3}
+};
+
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function clamp(v,a=0,b=100){return Math.max(a,Math.min(b,v))}
+function nowStr(){return new Date().toLocaleString()}
+
+function beep(freq=440,dur=0.08,vol=0.02){
+  try{
+    const ctx = beep.ctx || (beep.ctx = new (window.AudioContext||window.webkitAudioContext)());
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type='sine'; o.frequency.value=freq; g.gain.value=vol;
+    o.start(); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.stop(ctx.currentTime + dur*1.05);
+  }catch(e){}
+}
+
+/* -------------------------
+   Game State
+   ------------------------- */
+let state = null;
+function defaultState(){
+  return {
+    name:'Player',
+    region:'us',
+    age:18,
+    stats:{
+      charisma: rand(30,60),
+      intelligence: rand(30,70),
+      fitness: rand(30,65),
+      leadership: rand(25,60),
+      reputation: rand(10,30)
+    },
+    xp:0,
+    skillPoints:0,
+    skills:{civilian:[], military:[], politics:[]},
+    career:{type:'none', title:null, years:0},
+    military:{enlisted:false, branch:null, rank:0, years:0, units:[], deployments:[]},
+    politics:{inOffice:false, offices:[]},
+    relationships:[], // array of {id,name,type (friend/rom/rival),value}
+    medals:[],
+    achievements:[],
+    history:[],
+    events:[],
+    score:0,
+    retired:false,
+    createdAt: nowStr()
+  };
+}
+
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); beep(880,0.05,0.015); addLog('Game saved.'); return true; }catch(e){console.error(e); addLog('Save failed.'); return false;}
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return false;
+    state = JSON.parse(raw);
+    addLog('Loaded saved game.');
+    renderAll();
+    return true;
+  }catch(e){console.error(e); addLog('Load failed'); return false;}
+}
+function resetState(){
+  if(!confirm('Reset saved game?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = defaultState();
+  state.history.unshift(nowStr() + ' — New life (reset).');
+  saveState();
+  renderAll();
+}
+
+/* -------------------------
+   Leaderboard
+   ------------------------- */
+function saveLeaderboardEntry(entry){
+  const raw = localStorage.getItem(LB_KEY);
+  let arr = raw ? JSON.parse(raw) : [];
+  arr.push(entry);
+  // sort descending by score
+  arr.sort((a,b)=>b.score - a.score);
+  // keep top 50
+  arr = arr.slice(0,50);
+  localStorage.setItem(LB_KEY, JSON.stringify(arr));
+}
+function renderLeaderboard(){
+  const raw = localStorage.getItem(LB_KEY);
+  const el = document.getElementById('leaderboard');
+  if(!raw){ el.innerHTML = '<div class="muted">No entries yet.</div>'; return;}
+  const arr = JSON.parse(raw);
+  el.innerHTML = arr.slice(0,8).map((e,i)=>`<div><strong>#${i+1}</strong> ${e.name} — ${e.score} — ${e.note || ''}</div>`).join('');
+}
+
+/* -------------------------
+   Log / History / Achievements
+   ------------------------- */
+function addLog(msg){
+  state.history.unshift(nowStr() + ' — ' + msg);
+  if(state.history.length>400) state.history.pop();
+  renderLog();
+}
+function awardMedal(name,reason){
+  if(!state.medals.includes(name)){ state.medals.push(name); addLog('Medal awarded: ' + name + (reason?(' — '+reason):'')); }
+  if(reason) state.achievements.unshift(`${name} — ${reason}`);
+  renderMedals();
+}
+function awardAchievement(text){
+  state.achievements.unshift(text);
+  addLog('Achievement: ' + text);
+  renderAchievements();
+}
+
+/* -------------------------
+   NPC / Relationships
+   ------------------------- */
+function seedRelationships(){
+  if(state.relationships.length>0) return;
+  const names = ['Sam Rivera','Jordan Lee','Taylor Brooks','Morgan Kim','Casey Patel','Riley Ford','Alex Chen'];
+  names.forEach((n,i)=>{
+    state.relationships.push({id:'p'+i, name:n, kind: ['friend','rival','rom'][rand(0,2)], value: rand(10,60)});
+  });
+}
+function modifyRelationship(id,delta){
+  const p = state.relationships.find(r=>r.id===id);
+  if(!p) return;
+  p.value = clamp(p.value + delta, -50, 100);
+  addLog(`${p.name} relationship ${delta>0?'+':''}${delta} => ${p.value}`);
+  if(p.value>=80) awardAchievement(`Best friend: ${p.name}`);
+  renderRelationships();
+}
+
+/* -------------------------
+   Skills / Trees
+   ------------------------- */
+const SKILL_TREE = {
+  civilian: [
+    {id:'study',name:'Study (Uni)',desc:'+Intelligence growth, unlocks advanced careers',cost:1,effect: s=>{s.stats.intelligence+=6,scoreSmall()}},
+    {id:'startup',name:'Entrepreneur',desc:'Unlock startup option, boosts leadership',cost:2,effect:s=>{s.stats.leadership+=4}}
+  ],
+  military: [
+    {id:'tactics',name:'Tactics Training',desc:'Increase promotion chance, unlock strategy missions',cost:1,effect:s=>{s.stats.leadership+=3}},
+    {id:'endurance',name:'Endurance',desc:'Higher fitness, helps tryouts',cost:1,effect:s=>{s.stats.fitness+=5}}
+  ],
+  politics:[
+    {id:'oratory',name:'Oratory',desc:'Better campaign results',cost:1,effect:s=>{s.stats.charisma+=4}},
+    {id:'policy',name:'Policy Mastery',desc:'Higher law success',cost:2,effect:s=>{s.stats.intelligence+=3}}
+  ]
+};
+
+function spendSkill(branch,skillId){
+  if(state.skillPoints<=0){ alert('No skill points available.'); return; }
+  const skill = SKILL_TREE[branch].find(s=>s.id===skillId);
+  if(!skill) return;
+  if(state.skills[branch].includes(skillId)){ alert('Already learned.'); return; }
+  state.skills[branch].push(skillId);
+  state.skillPoints -= skill.cost || 1;
+  // apply effect simply
+  try{ skill.effect(state); }catch(e){}
+  addLog(`Learned skill: ${skill.name}`);
+  renderSkills();
+  saveState();
+}
+
+/* -------------------------
+   Military Module: tryouts, promotions, deployments
+   ------------------------- */
+const UNIT_TRYOUTS = {
+  'Navy SEALs': {req:{fitness:70,lead:50},time:2,base:30},
+  'Green Berets': {req:{fitness:65,lead:60,int:50},time:2,base:25},
+  'Airborne Rangers': {req:{fitness:60,lead:50},time:1,base:33}
+};
+const MIL_RANKS = ['Private','Corporal','Sergeant','Lieutenant','Captain','Major','Lt. Colonel','Colonel','Brigadier','Major General','Lt. General','General'];
+
+function enlist(branch){
+  if(state.military.enlisted){ alert('Already enlisted.'); return; }
+  state.military.enlisted = true;
+  state.military.branch = branch;
+  state.military.rank = 0;
+  state.military.years = 0;
+  state.stats.fitness = clamp(state.stats.fitness + rand(5,12));
+  awardAchievement(`Enlisted: ${branch}`);
+  addLog(`Enlisted in ${branch}`);
+  saveState();
+  renderAll();
+}
+
+function promoteMilitary(){
+  if(!state.military.enlisted) return;
+  if(state.military.rank < MIL_RANKS.length - 1){
+    state.military.rank++;
+    state.stats.leadership = clamp(state.stats.leadership + rand(1,4));
+    awardAchievement('Promoted to ' + MIL_RANKS[state.military.rank]);
+    addLog('Promoted to ' + MIL_RANKS[state.military.rank]);
+    saveState();
+    renderAll();
+  }
+}
+
+function tryout(unitName){
+  const u = UNIT_TRYOUTS[unitName];
+  if(!u){ alert('Unit not found'); return; }
+  if(!state.military.enlisted){ alert('You must be enlisted to tryout'); return; }
+  // cost time
+  passYears(u.time);
+  // compute base chance
+  let score = u.base;
+  score += Math.floor((state.stats.fitness - (u.req.fitness||50))/2);
+  score += Math.floor((state.stats.leadership - (u.req.lead||50))/4);
+  score += Math.floor(state.xp/60);
+  const roll = rand(1,100);
+  const success = roll <= clamp(score,5,95);
+  if(success){
+    state.military.units.push(unitName);
+    state.stats.reputation = clamp(state.stats.reputation + rand(3,8));
+    awardMedal('Unit Badge',`Joined ${unitName}`);
+    addLog(`Succeeded tryout for ${unitName} (roll ${roll} <= ${score})`);
+  } else {
+    state.stats.fitness = clamp(state.stats.fitness - rand(1,4));
+    addLog(`Failed tryout for ${unitName} (roll ${roll} > ${score})`);
+  }
+  saveState();
+  renderAll();
+}
+
+function startDeployment(type='combat',duration=2,style='Balanced',volunteer=true){
+  if(!state.military.enlisted){ alert('Must be enlisted to deploy.'); return; }
+  // compute risk + effects
+  const TYPES = {
+    combat:{label:'Combat',baseRep:8,baseXP:60,baseRisk:18},
+    peace:{label:'Peacekeeping',baseRep:6,baseXP:40,baseRisk:8},
+    human:{label:'Humanitarian',baseRep:10,baseXP:35,baseRisk:4}
+  };
+  const t = TYPES[type] || TYPES.combat;
+  // years pass
+  passYears(duration);
+  // style modifiers
+  let riskMod=0, repMod=0, xpMod=0;
+  if(style==='Aggressive'){ riskMod+=8; repMod-=2; xpMod+=10; }
+  if(style==='Restraint'){ riskMod-=6; repMod+=6; xpMod+=2; }
+  const veteranBonus = Math.floor(state.military.years / 2);
+  const finalRisk = clamp(t.baseRisk + riskMod - veteranBonus, 1, 95);
+  const injRoll = rand(1,100);
+  const injured = injRoll <= finalRisk;
+  if(injured){ const loss = rand(3,10); state.stats.fitness = clamp(state.stats.fitness - loss); addLog(`Injured on deployment (-${loss} fitness)`); }
+  // medals
+  const medalsAwarded = [];
+  if(rand(1,100) <= 95){ medalsAwarded.push('Campaign Medal'); awardMedal('Campaign Medal',`${t.label} ${duration}y`); }
+  if(type==='combat'){
+    let valorChance = Math.floor((state.stats.fitness - 50)/2) + (style==='Aggressive'?15:5) + Math.floor(state.xp/100);
+    if(rand(1,100) <= clamp(valorChance,5,90)){ medalsAwarded.push('Valour Star'); awardMedal('Valour Star','Bravery under fire'); }
+  }
+  const leadChance = Math.floor((state.stats.leadership - 45)/2) + Math.floor(state.military.years/2);
+  if(rand(1,100) <= clamp(leadChance,5,85)){ medalsAwarded.push('Leadership Cross'); awardMedal('Leadership Cross','Exceptional leadership on deployment'); }
+  if(type==='human' || style==='Restraint'){ if(rand(1,100) <= 60){ medalsAwarded.push('Humanitarian Ribbon'); awardMedal('Humanitarian Ribbon','Humanitarian action'); } }
+  // apply gains
+  state.stats.reputation = clamp(state.stats.reputation + t.baseRep + repMod + (medalsAwarded.length * 2));
+  state.xp += t.baseXP + xpMod + (medalsAwarded.length * 15);
+  const dep = {id:'d'+Date.now(), type:t.label, duration, style, volunteer, injured, medals:medalsAwarded, year:state.age - duration};
+  state.military.deployments.push(dep);
+  addLog(`Completed deployment: ${t.label} (${duration}y) — Style: ${style} — Injured: ${injured? 'Yes' : 'No'}`);
+  saveState();
+  renderAll();
+}
+
+/* -------------------------
+   Politics Module: campaigns & laws
+   ------------------------- */
+function runCampaign(level='local'){
+  // level: local, parliament, top
+  const region = REGIONS[state.region] || REGIONS.us;
+  const minAge = (level==='top')?30:21;
+  if(state.age < minAge){ alert('Too young for this campaign.'); return; }
+  // campaign mini-game: allocate three sliders (ads, rallies, fundraising)
+  showCampaignModal(level);
+}
+
+function _resolveCampaign(level, choices){
+  // choices: {ads:0-100, rallies:0-100, fundraising:0-100}
+  // compute base from charisma + rep + xp
+  const base = 30 + Math.floor((state.stats.charisma - 40)/2) + Math.floor((state.stats.reputation - 30)/2);
+  // choices weight: ads -> reach scaled by intelligence, rallies -> charisma, fundraising -> xp resources
+  const reach = Math.floor((choices.ads * (state.stats.intelligence/50)) / 10);
+  const passion = Math.floor((choices.rallies * (state.stats.charisma/50)) / 10);
+  const money = Math.floor((choices.fundraising * (state.xp/100)) / 10);
+  let chance = base + reach + passion + money;
+  // skill bonuses
+  if(state.skills.politics.includes('oratory')) chance += 6;
+  if(state.skills.politics.includes('policy')) chance += 6;
+  // party and endorsements from friends
+  const endorsementBonus = state.relationships.filter(r=>r.value>=60).length * 2;
+  chance += endorsementBonus;
+  chance += Math.floor(state.xp / 50);
+  chance = clamp(chance, 5, 95);
+  // campaign time cost
+  passYears(1);
+  const roll = rand(1,100);
+  if(roll <= chance){
+    // win
+    const title = (level==='top')?region.topTitle : (level==='parliament'?region.midTitle:region.local);
+    state.politics.inOffice = true;
+    state.politics.offices.push({title, startAge: state.age, years:0});
+    awardMedal('Election Victory', `Elected ${title}`);
+    addLog(`Won election: ${title} (roll ${roll} <= ${chance})`);
+    saveState();
+    renderAll();
+    alert('Victory! You were elected: ' + title);
+    return true;
+  } else {
+    addLog(`Lost election attempt (roll ${roll} > ${chance})`);
+    state.stats.reputation = clamp(state.stats.reputation - rand(1,5));
+    saveState();
+    renderAll();
+    alert('You lost the election.');
+    return false;
+  }
+}
+
+function advanceOfficeYears(n=1){
+  if(!state.politics.inOffice){ alert('Not in office'); return; }
+  const cur = state.politics.offices[state.politics.offices.length - 1];
+  cur.years += n;
+  state.xp += n * 10;
+  state.stats.reputation = clamp(state.stats.reputation + Math.floor(n * rand(1,3)));
+  // chance to pass law
+  for(let i=0;i<n;i++){
+    if(rand(1,100) < 25 + Math.floor(state.stats.intelligence/4)){
+      awardMedal('Legislative Achiever', 'Passed important legislation');
+      addLog('Passed important legislation while in office');
+    }
+  }
+  saveState(); renderAll();
+}
+
+/* -------------------------
+   Civilian: jobs, businesses
+   ------------------------- */
+const JOBS = [
+  {id:'student',name:'University Student',time:3,apply: s=>{s.stats.intelligence+=rand(6,12); s.xp+=30;}},
+  {id:'dev',name:'Junior Developer',time:2,apply:s=>{s.stats.intelligence+=rand(2,6); s.stats.charisma+=rand(1,3); s.xp+=20;}},
+  {id:'journal',name:'Journalist',time:2,apply:s=>{s.stats.charisma+=rand(3,7); s.stats.reputation+=rand(1,5); s.xp+=18;}}
+];
+function startJob(jobId){
+  const job = JOBS.find(j=>j.id===jobId);
+  if(!job){ alert('Job not found'); return; }
+  state.career = {type:'job', id:jobId, title:job.name, years:0, time: job.time};
+  addLog('Started job: ' + job.name);
+  saveState(); renderAll();
+}
+function progressJob(){
+  if(!state.career || state.career.type !== 'job') return;
+  state.career.years++;
+  if(state.career.years >= state.career.time){
+    const job = JOBS.find(j=>j.id===state.career.id);
+    if(job){ job.apply(state); awardAchievement('Completed: ' + job.name); addLog('Finished job program: ' + job.name); }
+    state.career = {type:'none'};
+    saveState(); renderAll();
+  }
+}
+function foundCompany(){
+  // attempt to found a company: success depends on int + lead + xp
+  passYears(2);
+  const chance = 30 + Math.floor((state.stats.intelligence - 45)/2) + Math.floor((state.stats.leadership-30)/3);
+  const roll = rand(1,100);
+  if(roll <= clamp(chance,5,95)){
+    awardMedal('Founders Medal','Founded a successful company');
+    state.stats.reputation = clamp(state.stats.reputation + rand(6,12));
+    state.xp += 80;
+    addLog('Founded a successful company.');
+  } else {
+    state.stats.reputation = clamp(state.stats.reputation - rand(1,4));
+    addLog('Failed company attempt.');
+  }
+  saveState(); renderAll();
+}
+
+/* -------------------------
+   Events & Narrative
+   ------------------------- */
+const GLOBAL_EVENTS = [
+  {id:'econ_boom',title:'Economic Boom',effect: s=>{ s.stats.reputation += 5; s.xp += 40; },chance:6},
+  {id:'pandemic',title:'Pandemic',effect: s=>{ s.stats.fitness = clamp(s.stats.fitness - 6); s.stats.reputation = clamp(s.stats.reputation - 4); },chance:4},
+  {id:'regional_conflict',title:'Regional Conflict',effect: s=>{ /* triggers military mobilization possibility */ },chance:5}
+];
+
+const NARRATIVE_ARCS = [
+  {id:'mentor_missing',title:'Mentor Missing',steps:[
+    {text:'Your mentor disappeared; you can investigate (risk) or ignore (safe).',opts:[{id:'investigate',txt:'Investigate'},{id:'ignore',txt:'Ignore'}]},
+    {text:'You find clues that lead to a powerful figure; expose or keep quiet.',opts:[{id:'expose',txt:'Expose'},{id:'cover',txt:'Cover it'}]}
+  ]},
+  {id:'family_crisis',title:'Family Crisis',steps:[
+    {text:'A family member needs help—spend time (reduce career progress) or delegate.',opts:[{id:'help',txt:'Help'},{id:'delegate',txt:'Delegate'}]}
+  ]}
+];
+
+function rollGlobalEvent(){
+  if(rand(1,100) <= 12){
+    const ev = GLOBAL_EVENTS[rand(0, GLOBAL_EVENTS.length - 1)];
+    try{ ev.effect(state); }catch(e){}
+    addLog('Global event: ' + ev.title);
+    state.events.push({id:ev.id, title:ev.title, year: state.age});
+    // effect on world: if conflict, increase chance of drafting, make military path more active
+    saveState(); renderAll();
+    return ev;
+  }
+  return null;
+}
+
+/* -------------------------
+   Time progression
+   ------------------------- */
+function passYears(n){
+  for(let i=0;i<n;i++){
+    state.age++;
+    // natural stat shifts
+    if(state.age < 40){
+      state.stats.intelligence = clamp(state.stats.intelligence + rand(0,2));
+      state.stats.charisma = clamp(state.stats.charisma + rand(0,2));
+      state.stats.fitness = clamp(state.stats.fitness - rand(0,1));
+    } else {
+      state.stats.fitness = clamp(state.stats.fitness - rand(0,2));
+      state.stats.intelligence = clamp(state.stats.intelligence - rand(0,1));
+    }
+    // career ticks
+    if(state.career && state.career.type === 'job'){ progressJob(); }
+    if(state.military.enlisted){ state.military.years++; if(rand(1,100) < 25){ const c = Math.floor((state.stats.leadership-40)/5) + Math.floor(state.xp/50); if(rand(1,100) < 30 + c) promoteMilitary(); } }
+    // random event chance per year
+    rollGlobalEvent();
+    // small reputation flux
+    state.stats.reputation = clamp(state.stats.reputation + rand(-1,1));
+    // skill point award per 3 years
+    if(state.age % 3 === 0) { state.skillPoints += 1; addLog('Gained 1 skill point.'); }
+  }
+  addLog(`Aged ${n} years; now ${state.age}.`);
+  saveState();
+  renderAll();
+}
+
+/* -------------------------
+   Scandals & Press mini-game
+   ------------------------- */
+function triggerScandal(source='Rumor',severity=1){
+  // severity affects rep loss and possible investigations
+  addLog(`Scandal: ${source} (severity ${severity})`);
+  // press mini-game: choose response on modal
+  showScandalModal(source,severity);
+}
+
+/* -------------------------
+   Mini-games: Click challenge for deployment (quick-time)
+   Speech mini-game: choose better phrasing
+   Campaign mini-game: sliders (implemented as modal)
+   ------------------------- */
+
+function showClickChallenge(targetClicks=40,duration=5000, onSuccess, onFail){
+  // modal overlay with button; count clicks within duration
+  const modalRoot = document.getElementById('modalRoot');
+  modalRoot.innerHTML = '';
+  const bg = document.createElement('div'); bg.className='modal-bg';
+  const modal = document.createElement('div'); modal.className='modal';
+  modal.innerHTML = `<div class="title">Deployment Challenge</div>
+    <div class="muted">Click the button rapidly to simulate mission performance.<br/>Target clicks: ${targetClicks} in ${duration/1000}s</div>
+    <div style="margin-top:12px" class="center"><button id="clickBtn" style="padding:18px 30px;font-size:16px">CLICK</button></div>
+    <div style="margin-top:8px" class="muted small">Score: <span id="ccount">0</span></div>
+    <div style="margin-top:10px" class="controls"><button id="ccancel" class="ghost">Cancel</button></div>`;
+  bg.appendChild(modal); modalRoot.appendChild(bg);
+  let clicks = 0; const btn = modal.querySelector('#clickBtn'); const txt = modal.querySelector('#ccount');
+  btn.onclick = ()=>{ clicks++; txt.textContent = clicks; beep(600,0.03,0.02); btn.classList.add('ping'); setTimeout(()=>btn.classList.remove('ping'),120); };
+  modal.querySelector('#ccancel').onclick = ()=>{ modalRoot.innerHTML=''; if(onFail) onFail(); };
+  const t0 = Date.now();
+  const id = setTimeout(()=>{
+    modalRoot.innerHTML='';
+    if(clicks >= targetClicks){ if(onSuccess) onSuccess(clicks); } else { if(onFail) onFail(clicks); }
+  }, duration);
+}
+
+function showCampaignModal(level){
+  // allow three sliders via prompt-style UI (simple)
+  const modalRoot = document.getElementById('modalRoot'); modalRoot.innerHTML='';
+  const bg = document.createElement('div'); bg.className='modal-bg';
+  const modal = document.createElement('div'); modal.className='modal';
+  modal.innerHTML = `<div class="title">Campaign: Choose strategy (${level})</div>
+    <div class="muted">Allocate 100 effort points among Ads, Rallies, Fundraising.</div>
+    <div style="margin-top:8px"><label>Ads: <input id="ads" type="range" min="0" max="100" value="30"></label><span id="valAds">30</span></div>
+    <div style="margin-top:6px"><label>Rallies: <input id="rallies" type="range" min="0" max="100" value="40"></label><span id="valRallies">40</span></div>
+    <div style="margin-top:6px"><label>Fundraising: <input id="fund" type="range" min="0" max="100" value="30"></label><span id="valFund">30</span></div>
+    <div style="margin-top:8px" class="muted small">Total must be 100. Adjust sliders to 100.</div>
+    <div style="margin-top:12px" class="controls"><button id="runCamp">Run Campaign</button><button id="cancelCamp" class="ghost">Cancel</button></div>`;
+  bg.appendChild(modal); modalRoot.appendChild(bg);
+  const ads = modal.querySelector('#ads'), rallies = modal.querySelector('#rallies'), fund = modal.querySelector('#fund');
+  const vAds = modal.querySelector('#valAds'), vR = modal.querySelector('#valRallies'), vF = modal.querySelector('#valFund');
+  function updateVals(){ vAds.textContent = ads.value; vR.textContent = rallies.value; vF.textContent = fund.value; }
+  ads.oninput = rallies.oninput = fund.oninput = updateVals;
+  modal.querySelector('#cancelCamp').onclick = ()=>{ modalRoot.innerHTML=''; };
+  modal.querySelector('#runCamp').onclick = ()=>{
+    const sum = Number(ads.value) + Number(rallies.value) + Number(fund.value);
+    if(sum !== 100){ alert('Total must be 100.'); return; }
+    modalRoot.innerHTML = '';
+    const choices = {ads: Number(ads.value), rallies: Number(rallies.value), fundraising: Number(fund.value)};
+    _resolveCampaign(level, choices);
+  };
+}
+
+function showScandalModal(source,severity){
+  const modalRoot = document.getElementById('modalRoot'); modalRoot.innerHTML='';
+  const bg = document.createElement('div'); bg.className='modal-bg';
+  const modal = document.createElement('div'); modal.className='modal';
+  modal.innerHTML = `<div class="title">Scandal: ${source}</div>
+    <div class="muted">A scandal threatens your reputation. Choose a strategy:</div>
+    <div style="margin-top:8px" class="controls">
+      <button id="apologize" class="alt">Public Apology</button>
+      <button id="deny" class="ghost">Deny</button>
+      <button id="spin" class="">Damage Control</button>
+    </div>
+    <div style="margin-top:8px" class="help">Each choice affects reputation, trust & future probability of winning elections.</div>`;
+  bg.appendChild(modal); modalRoot.appendChild(bg);
+  modal.querySelector('#apologize').onclick = ()=>{ state.stats.reputation = clamp(state.stats.reputation - rand(0,4)); state.xp += 8; addLog('Chose apology for scandal.'); modalRoot.innerHTML=''; saveState(); renderAll(); };
+  modal.querySelector('#deny').onclick = ()=>{ const r = rand(1,100); if(r < 45){ state.stats.reputation = clamp(state.stats.reputation - rand(4,10)); addLog('Deny failed'); } else { state.stats.reputation = clamp(state.stats.reputation + rand(0,3)); addLog('Deny succeeded'); } modalRoot.innerHTML=''; saveState(); renderAll(); };
+  modal.querySelector('#spin').onclick = ()=>{ state.stats.reputation = clamp(state.stats.reputation + rand(-2,4)); state.xp += 6; addLog('Spin attempted'); modalRoot.innerHTML=''; saveState(); renderAll(); };
+}
+
+/* -------------------------
+   End-of-life scoring & leaderboard submission
+   ------------------------- */
+function computeScore(){
+  // simple weighted score: medals*20 + xp/5 + reputation*3 + (mil rank index * 15) + office weight
+  let score = 0;
+  score += (state.medals.length || 0) * 25;
+  score += Math.floor((state.xp || 0) / 5);
+  score += (state.stats.reputation || 0) * 4;
+  score += (state.military.rank || 0) * 18;
+  if(state.politics.inOffice) score += 200;
+  score += (state.achievements.length || 0) * 6;
+  state.score = score;
+  return score;
+}
+
+function submitScore(){
+  const score = computeScore();
+  const note = prompt('Submit score to local leaderboard. Add a short note (optional).', state.region);
+  saveLeaderboardEntry({name:state.name || 'Player', score, note, date: nowStr()});
+  addLog(`Submitted score: ${score}`);
+  renderLeaderboard();
+}
+
+/* -------------------------
+   UI Rendering
+   ------------------------- */
+
+function renderAll(){
+  renderHeader();
+  renderStats();
+  renderSkills();
+  renderRelationships();
+  renderActions();
+  renderMedals();
+  renderLog();
+  renderDeployments();
+  renderPolitics();
+  renderHistory();
+  renderAchievements();
+  renderLeaderboard();
+}
+
+function renderHeader(){
+  document.getElementById('name').value = state.name;
+  document.getElementById('region').value = state.region;
+  document.getElementById('age').textContent = state.age;
+}
+
+function renderStats(){
+  const s = state.stats;
+  document.getElementById('s_cha').textContent = s.charisma;
+  document.getElementById('s_int').textContent = s.intelligence;
+  document.getElementById('s_fit').textContent = s.fitness;
+  document.getElementById('s_lea').textContent = s.leadership;
+  document.getElementById('s_rep').textContent = s.reputation;
+  document.getElementById('bar_cha').style.width = s.charisma + '%';
+  document.getElementById('bar_int').style.width = s.intelligence + '%';
+  document.getElementById('bar_fit').style.width = s.fitness + '%';
+  document.getElementById('bar_lea').style.width = s.leadership + '%';
+  document.getElementById('bar_rep').style.width = s.reputation + '%';
+  document.getElementById('xp').textContent = state.xp;
+}
+
+function renderSkills(){
+  const el = document.getElementById('skillTree'); el.innerHTML = '';
+  ['civilian','military','politics'].forEach(branch=>{
+    const box = document.createElement('div'); box.className='skill';
+    box.innerHTML = `<div style="font-weight:700">${branch.charAt(0).toUpperCase()+branch.slice(1)}</div>`;
+    SKILL_TREE[branch].forEach(s=>{
+      const learned = state.skills[branch].includes(s.id);
+      const btn = `<button ${learned?'disabled':''} onclick="window.spendSkill('${branch}','${s.id}')">${learned? 'Learned' : 'Learn'}</button>`;
+      box.innerHTML += `<div style="margin-top:6px"><strong>${s.name}</strong><div class="muted small">${s.desc}</div><div style="margin-top:6px">Cost: ${s.cost} SP ${btn}</div></div>`;
+    });
+    el.appendChild(box);
+  });
+  // show SP
+  const sp = document.createElement('div'); sp.className='muted small'; sp.style.marginTop='8px'; sp.textContent = 'Skill Points: ' + state.skillPoints;
+  el.appendChild(sp);
+}
+
+function renderRelationships(){
+  seedRelationships();
+  const el = document.getElementById('relationships'); el.innerHTML = '';
+  state.relationships.forEach(r=>{
+    const d = document.createElement('div'); d.className='relationship';
+    d.innerHTML = `<div style="width:48px;text-align:center">${r.name.split(' ')[0]}</div><div style="flex:1"><div style="font-weight:700">${r.name} <span class="muted small">(${r.kind})</span></div><div class="muted small">Value: ${r.value}</div></div><div style="display:flex;flex-direction:column;gap:6px"><button onclick="window.modifyRel('${r.id}',5)">+5</button><button class="ghost" onclick="window.modifyRel('${r.id}',-5)">-5</button></div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderActions(){
+  const el = document.getElementById('actionsArea');
+  if(state.retired){ el.innerHTML = '<div class="muted">You have retired. Compute final score or start a new life.</div><div class="controls"><button onclick="window.computeAndSubmit()">Compute & Submit Score</button><button onclick="window.newLifePrompt()" class="alt">New Life</button></div>'; return; }
+  let html = '<div class="notice"><strong>Available Actions</strong></div>';
+  // civilian actions
+  if(state.career.type === 'none'){
+    html += '<div class="muted"><strong>Civilian</strong></div>';
+    JOBS.forEach(job=> html += `<div class="role-pill">${job.name} <button onclick="window.startJob('${job.id}')">Start</button></div>`);
+    html += `<div style="margin-top:6px"><button onclick="window.foundCompany()">Found Company</button></div>`;
+  } else {
+    html += `<div class="muted">Career: ${state.career.title || state.career.type} — ${state.career.years || 0}/${state.career.time || '-'} years</div>`;
+  }
+  // military
+  if(!state.military.enlisted){
+    html += '<div style="margin-top:8px"><strong>Military</strong><div class="muted">Enlist in a branch:</div><div class="controls"><button onclick="window.enlistUI(\\'Army\\')">Army</button><button onclick="window.enlistUI(\\'Navy\\')" class="alt">Navy</button><button onclick="window.enlistUI(\\'Air Force\\')" class="alt">Air Force</button><button onclick="window.enlistUI(\\'Marines\\')" class="alt">Marines</button></div></div>';
+  } else {
+    html += `<div style="margin-top:8px"><strong>Military</strong><div class="muted">Branch: ${state.military.branch} — Rank: ${MIL_RANKS[state.military.rank]}</div>`;
+    Object.keys(UNIT_TRYOUTS).forEach(u => html += `<div class="role-pill">${u} <button onclick="window.tryoutUI('${u}')">Tryout</button></div>`);
+    html += `<div style="margin-top:6px" class="muted">Deploy:</div><div class="controls"><button onclick="window.deployUI('combat')">Combat</button><button onclick="window.deployUI('peace')">Peacekeeping</button><button onclick="window.deployUI('human')">Humanitarian</button></div></div>`;
+  }
+  // politics
+  if(!state.politics.inOffice){
+    html += `<div style="margin-top:8px"><strong>Politics</strong><div class="muted">Run for office:</div><div class="controls"><button onclick="window.runCampaign('local')">Run Local (${REGIONS[state.region].local})</button><button onclick="window.runCampaign('parliament')" class="alt">Run ${REGIONS[state.region].midTitle}</button><button onclick="window.runCampaign('top')" class="alt">Run ${REGIONS[state.region].topTitle}</button></div></div>`;
+  } else {
+    const cur = state.politics.offices[state.politics.offices.length - 1];
+    html += `<div style="margin-top:8px"><strong>In Office</strong><div class="muted">${cur.title} — ${cur.years} years</div><div class="controls"><button onclick="window.serveYear()">Serve 1 year</button><button onclick="window.serveYear(5)" class="alt">Serve 5 years</button></div></div>`;
+  }
+  // social & story
+  html += `<div style="margin-top:10px"><strong>Story & Events</strong><div class="controls"><button onclick="window.triggerEvent()">Random Event</button><button onclick="window.startArc()">Start Arc</button></div></div>`;
+  el.innerHTML = html;
+}
+
+function renderMedals(){
+  const el = document.getElementById('medals');
+  if(state.medals.length===0) el.innerHTML = '<div class="muted">No medals yet.</div>';
+  else el.innerHTML = state.medals.map(m=>`<div class="medal ${medalTier(m)}"><div class="icon">${m.charAt(0)}</div><div><strong>${m}</strong></div></div>`).join('');
+}
+function medalTier(name){
+  if(/Valour|Leadership|Founders|Election/i.test(name)) return 'gold';
+  if(/Humanitarian|Long|Legislative/i.test(name)) return 'silver';
+  return 'bronze';
+}
+
+function renderLog(){
+  const el = document.getElementById('gamelog');
+  el.innerHTML = state.history.slice(0,120).map(h=>`<div>${h}</div>`).join('');
+}
+
+function renderDeployments(){
+  const el = document.getElementById('deployments');
+  if(state.military.deployments.length===0) el.innerHTML = '<div class="muted">No deployments</div>';
+  else el.innerHTML = state.military.deployments.slice().reverse().map(d=>`<div style="margin-bottom:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)"><strong>${d.type}</strong> (${d.duration}y) Style: ${d.style} Injured: ${d.injured?'<span style="color:#fb7185">Yes</span>':'No'} Medals: ${d.medals.join(', ')}</div>`).join('');
+}
+
+function renderPolitics(){
+  const el = document.getElementById('politics');
+  if(!state.politics.inOffice) el.innerHTML = '<div class="muted">Not in office</div>';
+  else {
+    const cur = state.politics.offices[state.politics.offices.length - 1];
+    el.innerHTML = `<div><strong>${cur.title}</strong> (Years: ${cur.years})</div>`;
+  }
+}
+
+function renderHistory(){
+  const el = document.getElementById('history');
+  el.innerHTML = state.history.slice(0,8).map(h=>`<div>${h}</div>`).join('');
+}
+function renderAchievements(){
+  const el = document.getElementById('achievements');
+  if(state.achievements.length===0) el.innerHTML = '<div class="muted">No achievements</div>';
+  else el.innerHTML = state.achievements.slice(0,8).map(a=>`<div>• ${a}</div>`).join('');
+}
+
+/* -------------------------
+   UI Hookups & Window API
+   ------------------------- */
+
+function hookupUI(){
+  document.getElementById('newLife').onclick = ()=> newLifePrompt();
+  document.getElementById('saveBtn').onclick = ()=> saveState();
+  document.getElementById('loadBtn').onclick = ()=> { if(!loadState()) alert('No save found.'); };
+  document.getElementById('exportBtn').onclick = ()=> { const data = JSON.stringify(state, null, 2); prompt('Copy your export JSON (Ctrl+C):', data); };
+  document.getElementById('importBtn').onclick = ()=> {
+    const raw = prompt('Paste save JSON here:');
+    if(!raw) return;
+    try{ state = JSON.parse(raw); saveState(); renderAll(); alert('Imported save.'); }catch(e){ alert('Invalid JSON'); }
+  };
+  document.getElementById('nextYear').onclick = ()=> { passYears(1); };
+  document.getElementById('auto10').onclick = ()=> { for(let i=0;i<10;i++){ passYears(1); } };
+  document.getElementById('retire').onclick = ()=> { if(confirm('Retire now?')) { state.retired = true; addLog('Retired.'); saveState(); renderAll(); } };
+  document.getElementById('name').onchange = (e)=> { state.name = e.target.value; saveState(); renderAll(); };
+  document.getElementById('region').onchange = (e)=> { state.region = e.target.value; saveState(); renderAll(); };
+
+  // expose window helpers for inline html actions
+  window.enlistUI = (branch)=>{ enlist(branch); renderAll(); saveState(); };
+  window.tryoutUI = (u)=>{ tryout(u); };
+  window.deployUI = (t)=>{ // prompt for years and style
+    const resp = prompt('Enter years (1-4) and style (Aggressive/Balanced/Restraint) as "2,Balanced"', '2,Balanced');
+    if(!resp) return;
+    const parts = resp.split(','); const yrs = Math.max(1, Math.min(4, parseInt(parts[0]) || 2)); const style = parts[1] ? parts[1].trim() : 'Balanced';
+    startDeploymentUI(t, yrs, style);
+  };
+  window.runCampaign = (lvl)=> runCampaign(lvl);
+  window.serveYear = (n=1)=> advanceOfficeYears(n);
+  window.startJob = (id)=> startJob(id);
+  window.foundCompany = ()=> foundCompany();
+  window.modifyRel = (id,d)=> modifyRelationship(id,d);
+  window.computeAndSubmit = ()=> { computeScore(); submitScore(); };
+  window.newLifePrompt = ()=> newLifePrompt();
+  window.spendSkill = (branch, id)=> spendSkill(branch,id);
+
+  // keyboard shortcuts
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'N' || e.key === 'n'){ passYears(1); }
+    if(e.key === 'A' || e.key === 'a'){ for(let i=0;i<10;i++) passYears(1); }
+    if(e.key === 'S' || e.key === 's'){ saveState(); }
+    if(e.key === 'L' || e.key === 'l'){ loadState(); }
+  });
+}
+
+/* -------------------------
+   Helper UI modals for certain flows
+   ------------------------- */
+
+function newLifePrompt(){
+  const name = prompt('Enter name for new life:', state.name || 'Player');
+  if(!name) return;
+  const region = prompt('Region (us, uk, ca, de, au):', state.region || 'us');
+  state = defaultState();
+  state.name = name;
+  if(REGIONS[region]) state.region = region;
+  state.history.unshift(nowStr() + ' — Born as ' + state.name + ' in ' + REGIONS[state.region].name);
+  saveState(); renderAll();
+}
+
+function startDeploymentUI(key,duration,style){
+  // map friendly keys to type id
+  const map = {'combat':'combat','peace':'peace','human':'human'};
+  startDeployment((map[key]||'combat'), duration, style, true);
+}
+
+function startDeployment(type,duration,style, volunteer){
+  // show quick challenge optional
+  if(confirm('Attempt a quick mission challenge? Success increases medal chances (requires clicking challenge). Click OK to attempt quick-time challenge.')){
+    showClickChallenge(40, 4500, (clicks)=>{
+      // success: boost stats and medal chance
+      state.stats.leadership = clamp(state.stats.leadership + 2);
+      addLog('Quick-time success on deployment!');
+      // compute real deployment with bonus
+      // we'll run startDeploymentCore with a flag for challenge success
+      startDeploymentCore(type,duration,style,volunteer,true);
+    }, (clicks)=>{
+      addLog('Quick-time failed (clicks: ' + clicks + ') — proceeding with full deployment.');
+      startDeploymentCore(type,duration,style,volunteer,false);
+    });
+  } else {
+    startDeploymentCore(type,duration,style,volunteer,false);
+  }
+}
+
+function startDeploymentCore(type,duration,style,volunteer,challengeSuccess){
+  // reuse earlier startDeployment logic
+  startDeployment(type,duration,style,volunteer);
+  // if challengeSuccess, small extra medal/xp bonus
+  if(challengeSuccess){
+    state.xp += 30;
+    addLog('Bonus XP for mission performance.');
+    awardMedal('Campaign Medal','Outstanding mission performance (challenge)');
+  }
+  saveState(); renderAll();
+}
+
+/* -------------------------
+   Story arcs
+   ------------------------- */
+function startArc(){
+  const arc = NARRATIVE_ARCS[rand(0, NARRATIVE_ARCS.length - 1)];
+  showArcModal(arc);
+}
+
+function showArcModal(arc){
+  const modalRoot = document.getElementById('modalRoot'); modalRoot.innerHTML='';
+  const bg = document.createElement('div'); bg.className='modal-bg';
+  const modal = document.createElement('div'); modal.className='modal';
+  let idx = 0;
+  function showStep(){
+    const step = arc.steps[idx];
+    modal.innerHTML = `<div class="title">${arc.title}</div><div class="muted">${step.text}</div><div style="margin-top:8px" class="controls"></div>`;
+    step.opts.forEach(o=>{
+      const b = document.createElement('button'); b.textContent = o.txt;
+      b.onclick = ()=>{ addLog(`Arc ${arc.id}: chose ${o.id}`); idx++; if(idx >= arc.steps.length){ modalRoot.innerHTML=''; awardAchievement('Completed arc: ' + arc.title); } else showStep(); };
+      modal.querySelector('.controls').appendChild(b);
+    });
+  }
+  bg.appendChild(modal); modalRoot.appendChild(bg);
+  showStep();
+}
+
+/* -------------------------
+   Initial boot
+   ------------------------- */
+function init(){
+  // load saved or default
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw){
+    try{ state = JSON.parse(raw); addLog('Resumed saved life.'); }catch(e){ state = defaultState(); }
+  } else {
+    state = defaultState();
+    state.history.unshift(nowStr() + ' — New life started.');
+  }
+  hookupUI();
+  seedRelationships();
+  renderAll();
+  // initial onboarding hint
+  if(!localStorage.getItem('lifesim_seen_tour')){
+    localStorage.setItem('lifesim_seen_tour','1');
+    alert('Welcome to LifeSim! Press N to advance a year quickly. Use buttons to enlist, run campaigns, and deploy. Skill points awarded every 3 years.');
+  }
+}
+
+/* -------------------------
+   Expose some functions to global for inline handlers
+   ------------------------- */
+window.spendSkill = spendSkill;
+window.modifyRel = modifyRelationship;
+window.enlistUI = enlist;
+window.tryoutUI = tryout;
+window.deployUI = startDeploymentUI;
+window.runCampaign = runCampaign;
+window.startJob = startJob;
+window.foundCompany = foundCompany;
+window.startArc = startArc;
+window.triggerEvent = ()=> { const ev = rollGlobalEvent(); if(ev) alert('Event: ' + ev.title); };
+window.computeAndSubmit = ()=> { computeScore(); submitScore(); };
+window.newLifePrompt = newLifePrompt;
+window.startDeployment = startDeployment;
+
+/* -------------------------
+   Start game
+   ------------------------- */
+init();
+
+/* -------------------------
+   Helper small functions referenced earlier but located after init to avoid hoisting issues
+   ------------------------- */
+function startDeployment(type,duration,style, volunteer){
+  // alias to core
+  startDeploymentCore(type,duration,style,volunteer,false);
+}
+function startDeploymentCore(type,duration,style,volunteer,challengeSuccess){
+  // This wrapper exists because function referenced earlier. Call previously defined core.
+  // We'll directly use the logic defined above by calling startDeploymentCore internal impl - but we already have one; so replicate to ensure continuity
+  const TYPES = {
+    combat:{label:'Combat',baseRep:8,baseXP:60,baseRisk:18},
+    peace:{label:'Peacekeeping',baseRep:6,baseXP:40,baseRisk:8},
+    human:{label:'Humanitarian',baseRep:10,baseXP:35,baseRisk:4}
+  };
+  const t = TYPES[type] || TYPES.combat;
+  passYears(duration);
+  let riskMod=0, repMod=0, xpMod=0;
+  if(style==='Aggressive'){ riskMod+=8; repMod-=2; xpMod+=10; }
+  if(style==='Restraint'){ riskMod-=6; repMod+=6; xpMod+=2; }
+  const veteranBonus = Math.floor(state.military.years / 2);
+  const finalRisk = clamp(t.baseRisk + riskMod - veteranBonus, 1, 95);
+  const injRoll = rand(1,100);
+  const injured = injRoll <= finalRisk;
+  if(injured){ const loss = rand(3,10); state.stats.fitness = clamp(state.stats.fitness - loss); addLog(`Injured on deployment (-${loss} fitness)`); }
+  const medalsAwarded = [];
+  if(rand(1,100) <= 95){ medalsAwarded.push('Campaign Medal'); awardMedal('Campaign Medal',`${t.label} ${duration}y`); }
+  if(type==='combat'){
+    let valorChance = Math.floor((state.stats.fitness - 50)/2) + (style==='Aggressive'?15:5) + Math.floor(state.xp/100);
+    if(rand(1,100) <= clamp(valorChance,5,90)){ medalsAwarded.push('Valour Star'); awardMedal('Valour Star','Bravery under fire'); }
+  }
+  const leadChance = Math.floor((state.stats.leadership - 45)/2) + Math.floor(state.military.years/2);
+  if(rand(1,100) <= clamp(leadChance,5,85)){ medalsAwarded.push('Leadership Cross'); awardMedal('Leadership Cross','Exceptional leadership on deployment'); }
+  if(type==='human' || style==='Restraint'){ if(rand(1,100) <= 60){ medalsAwarded.push('Humanitarian Ribbon'); awardMedal('Humanitarian Ribbon','Humanitarian action'); } }
+  state.stats.reputation = clamp(state.stats.reputation + t.baseRep + repMod + (medalsAwarded.length * 2));
+  state.xp += t.baseXP + xpMod + (medalsAwarded.length * 15);
+  const dep = {id:'d'+Date.now(), type:t.label, duration, style, volunteer, injured, medals:medalsAwarded, year:state.age - duration};
+  state.military.deployments.push(dep);
+  addLog(`Completed deployment: ${t.label} (${duration}y) — Style: ${style} — Injured: ${injured? 'Yes' : 'No'}`);
+  if(challengeSuccess){ state.xp += 30; addLog('Bonus XP for mission performance.'); awardMedal('Campaign Medal','Outstanding mission performance (challenge)'); }
+  saveState(); renderAll();
+}
+
+/* End of single-file game */
+</script>
 </body>
 </html>
