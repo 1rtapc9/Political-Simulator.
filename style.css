@@ -1,0 +1,43 @@
+:root{
+  --bg:#081226; --panel:#0d1622; --accent:#6fd3ff; --muted:#9fb0bf;
+  --good:#34d399; --bad:#fb7185; --gold:#f59e0b; --glass: rgba(255,255,255,0.03);
+  --shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,var(--bg),#02131a);color:#e7f4ff}
+#app-root{max-width:1250px;margin:18px auto;padding:18px}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.header h1{margin:0;font-size:20px;color:var(--accent)}
+.layout{display:flex;gap:12px}
+.panel{background:linear-gradient(180deg,var(--panel), rgba(255,255,255,0.01)); padding:12px;border-radius:10px;box-shadow:var(--shadow); min-width:0}
+.sidebar{width:360px;flex:0 0 360px}
+.stat{display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+.stat .bar{height:10px;background:#072033;border-radius:8px;overflow:hidden;margin-left:10px;flex:1}
+.stat .bar > i{display:block;height:100%}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button{background:linear-gradient(180deg,#0e76a8,#0b4f73);border:0;color:white;padding:8px 10px;border-radius:8px;cursor:pointer;transition:transform .08s}
+button:active{transform:translateY(1px)}
+button.alt{background:linear-gradient(180deg,#2b6cb0,#1e3a8a)}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
+button.danger{background:linear-gradient(180deg,#ef4444,#b91c1c)}
+input,select,textarea{padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+.log{height:220px;overflow:auto;background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;font-size:13px}
+.muted{color:var(--muted)}
+.title{font-weight:700;color:var(--accent);margin-bottom:6px}
+.notice{background:linear-gradient(90deg,#072033,#02121a);padding:8px;border-radius:8px;margin-bottom:8px}
+.role-pill{display:inline-block;padding:6px 8px;border-radius:999px;background:var(--glass);margin:4px 4px 4px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.medal{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin:6px 0}
+.medal .icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.medal.gold .icon{background:linear-gradient(90deg,#fbbf24,#f59e0b);color:#042018}
+.medal.silver .icon{background:linear-gradient(90deg,#cbd5e1,#94a3b8);color:#042018}
+.medal.bronze .icon{background:linear-gradient(90deg,#f6ad55,#c2410c);color:#042018}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal{background:linear-gradient(180deg,#0b1622,#07121a);padding:16px;border-radius:10px;max-width:780px;width:94%;box-shadow:0 20px 60px rgba(0,0,0,0.7)}
+.help{font-size:13px;color:var(--muted);margin-top:8px}
+.small{font-size:13px}
+.skill-tree{display:flex;gap:8px;flex-wrap:wrap}
+.skill{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;min-width:140px}
+.relationship{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;background:rgba(255,255,255,0.02);margin:4px 0}
+.kbd{background:#02121a;border:1px solid rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px;font-size:12px}
+@media(max-width:1000px){.layout{flex-direction:column}.sidebar{width:100%}}
